@@ -63,7 +63,7 @@ const BACKGROUND_FADE_START = Math.max(
 )
 
 const TYPED_LINES = [
-  "✨ hi ✨",
+  "✨ hi mauraaa sayangg ✨",
   "",
   "💝 today is your birthday 💝",
   "",
