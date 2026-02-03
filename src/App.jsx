@@ -384,7 +384,7 @@ export default function App() {
 
   useEffect(() => {
     // const audio = new Audio()
-    const audio = new Audio("/PREP - Cheapest Flight.mp3")
+    const audio = new Audio("/Favorite Person.mp3")
     audio.loop = true
     audio.preload = "auto"
     backgroundAudioRef.current = audio
