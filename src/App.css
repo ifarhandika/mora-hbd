@@ -168,3 +168,125 @@ canvas {
   border: 1px solid rgba(255, 182, 193, 0.2);
   animation: pulse-opacity 2s ease-in-out infinite;
 }
+
+/* Ready Question Overlay */
+.ready-question-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f5ede4;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ready-question-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  padding: 2rem;
+}
+
+.ready-question-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 400;
+  color: #3d3d3d;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.ready-question-options {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.ready-option {
+  width: 150px;
+  height: 150px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.ready-option:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.ready-option-yes {
+  background: linear-gradient(135deg, #a8e6cf 0%, #88d8b0 100%);
+}
+
+.ready-option-no {
+  background: linear-gradient(135deg, #ffaaa5 0%, #ff8b94 100%);
+}
+
+.option-emoji {
+  font-size: 2.5rem;
+}
+
+.option-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #3d3d3d;
+}
+
+.ready-vs {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #888;
+  letter-spacing: 0.05em;
+}
+
+.no-click-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.please-click-yes {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  color: #ff6b6b;
+  animation: bounceIn 0.5s ease-out;
+  margin: 0;
+}
+
+.please-click-yes:last-child {
+  animation: bounceIn 0.5s ease-out, pulse-opacity 1.5s ease-in-out infinite;
+}
+
+@keyframes bounceIn {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.5); 
+  }
+  50% { 
+    transform: scale(1.1); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}

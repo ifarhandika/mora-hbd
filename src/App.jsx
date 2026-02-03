@@ -368,11 +368,23 @@ export default function App() {
   const [fireworksActive, setFireworksActive] = useState(false)
   const [activeCardId, setActiveCardId] = useState(null)
   const [activePictureFrameId, setActivePictureFrameId] = useState(null)
+  const [showReadyQuestion, setShowReadyQuestion] = useState(false)
+  const [noClickCount, setNoClickCount] = useState(0)
+  const [waitingForSpaceToShowQuestion, setWaitingForSpaceToShowQuestion] =
+    useState(false)
   const backgroundAudioRef = useRef(null)
+
+  const NO_CLICK_MESSAGES = [
+    "please click yes 🥺",
+    "kok kamu ga siap?",
+    "ayolah... 🥺",
+    "please please please 🙏",
+    "tombol no nya aku ilangin dehh biar yes aja 😤",
+  ]
 
   useEffect(() => {
     // const audio = new Audio()
-    const audio = new Audio("/PREP - Cheapest Flight.mp3");
+    const audio = new Audio("/PREP - Cheapest Flight.mp3")
     audio.loop = true
     audio.preload = "auto"
     backgroundAudioRef.current = audio
@@ -426,6 +438,9 @@ export default function App() {
       setCurrentLineIndex(0)
       setCurrentCharIndex(0)
       setSceneStarted(false)
+      setShowReadyQuestion(false)
+      setNoClickCount(0)
+      setWaitingForSpaceToShowQuestion(false)
       setIsCandleLit(true)
       setFireworksActive(false)
       setHasAnimationCompleted(false)
@@ -433,9 +448,13 @@ export default function App() {
     }
 
     if (typingComplete) {
-      if (!sceneStarted) {
+      if (
+        !sceneStarted &&
+        !showReadyQuestion &&
+        !waitingForSpaceToShowQuestion
+      ) {
         const handle = window.setTimeout(() => {
-          setSceneStarted(true)
+          setWaitingForSpaceToShowQuestion(true)
         }, POST_TYPING_SCENE_DELAY)
         return () => window.clearTimeout(handle)
       }
@@ -468,6 +487,8 @@ export default function App() {
     currentLineIndex,
     typingComplete,
     sceneStarted,
+    showReadyQuestion,
+    waitingForSpaceToShowQuestion,
   ])
 
   useEffect(() => {
@@ -488,6 +509,10 @@ export default function App() {
         setHasStarted(true)
         return
       }
+      if (waitingForSpaceToShowQuestion && !showReadyQuestion) {
+        setShowReadyQuestion(true)
+        return
+      }
       if (hasAnimationCompleted && isCandleLit) {
         setIsCandleLit(false)
         setFireworksActive(true)
@@ -496,7 +521,14 @@ export default function App() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [hasStarted, hasAnimationCompleted, isCandleLit, playBackgroundMusic])
+  }, [
+    hasStarted,
+    hasAnimationCompleted,
+    isCandleLit,
+    playBackgroundMusic,
+    waitingForSpaceToShowQuestion,
+    showReadyQuestion,
+  ])
 
   const handleCardToggle = useCallback((id) => {
     setActiveCardId((current) => (current === id ? null : id))
@@ -506,13 +538,24 @@ export default function App() {
     setActivePictureFrameId((current) => (current === id ? null : id))
   }, [])
 
+  const handleYesClick = useCallback(() => {
+    setShowReadyQuestion(false)
+    setSceneStarted(true)
+  }, [])
+
+  const handleNoClick = useCallback(() => {
+    setNoClickCount((prev) => Math.min(prev + 1, NO_CLICK_MESSAGES.length))
+  }, [NO_CLICK_MESSAGES.length])
+
   const isScenePlaying = hasStarted && sceneStarted
 
   return (
     <div className="App">
       <div
         className="background-overlay"
-        style={{ opacity: backgroundOpacity }}
+        style={{
+          opacity: showReadyQuestion || sceneStarted ? 0 : backgroundOpacity,
+        }}
       >
         <div className="typed-text">
           {typedLines.map((line, index) => {
@@ -532,7 +575,49 @@ export default function App() {
             )
           })}
         </div>
+        {waitingForSpaceToShowQuestion && !showReadyQuestion && (
+          <div className="space-hint">press space to continue</div>
+        )}
       </div>
+      {showReadyQuestion && !sceneStarted && (
+        <div className="ready-question-overlay">
+          <div className="ready-question-container">
+            <h1 className="ready-question-title">
+              Are you ready for what's next?
+            </h1>
+            <div className="ready-question-options">
+              <button
+                className="ready-option ready-option-yes"
+                onClick={handleYesClick}
+              >
+                <span className="option-emoji">✨</span>
+                <span className="option-text">Yes</span>
+              </button>
+              {noClickCount < NO_CLICK_MESSAGES.length && (
+                <>
+                  <span className="ready-vs">v.s.</span>
+                  <button
+                    className="ready-option ready-option-no"
+                    onClick={handleNoClick}
+                  >
+                    <span className="option-emoji">🤔</span>
+                    <span className="option-text">No</span>
+                  </button>
+                </>
+              )}
+            </div>
+            {noClickCount > 0 && (
+              <div className="no-click-messages">
+                {NO_CLICK_MESSAGES.slice(0, noClickCount).map((msg, idx) => (
+                  <p key={idx} className="please-click-yes">
+                    {msg}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {hasAnimationCompleted && isCandleLit && (
         <div className="hint-overlay">press space to blow out the candle</div>
       )}
